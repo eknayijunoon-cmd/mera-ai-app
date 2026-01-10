@@ -1,0 +1,24 @@
+import streamlit as st
+
+st.set_page_config(page_title="AI Try-On", layout="wide")
+
+st.title("👗 Mera AI Product Catalog")
+st.write("Apne kapde ko model par pehna kar dekhein.")
+
+# User se API Key lena (fal.ai se)
+api_key = st.sidebar.text_input("Fal.ai API Key", type="password")
+
+col1, col2 = st.columns(2)
+with col1:
+    garment = st.file_uploader("Kapde ki Photo (Garment)", type=['jpg', 'png'])
+with col2:
+    model_img = st.file_uploader("Model ki Photo (Person)", type=['jpg', 'png'])
+
+if st.button("Magic Generate ✨"):
+    if not api_key:
+        st.error("Pehle API Key daalein!")
+    elif garment and model_img:
+        st.info("AI kaam kar raha hai... 30-40 seconds rukein.")
+        # AI Logic yahan chalega
+    else:
+        st.warning("Kripya dono photos upload karein.")
