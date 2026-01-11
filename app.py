@@ -1,37 +1,22 @@
 import streamlit as st
-import requests
+import fal_client
 
-# Page setup
-st.set_page_config(page_title="AI Fashion Studio", layout="wide")
+# 1. Get the key from Secrets (or Sidebar as a backup)
+api_key = st.secrets.get("FAL_KEY") or st.sidebar.text_input("Enter Fal.ai Key", type="password")
 
-st.title("👗 Mera AI Fashion Studio")
-st.write("Apne kisi bhi kapde ko model par pehna kar dekhein.")
-
-# Sidebar for API Key
-st.sidebar.header("Settings")
-api_key = st.sidebar.text_input("Fal.ai API Key", type="password", help="Fal.ai se apni key yahan dalein")
-
-# UI Layout
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("1. Kapde ki Photo")
-    garment_file = st.file_uploader("Upload Garment", type=['jpg', 'jpeg', 'png'])
-
-with col2:
-    st.subheader("2. Model ki Photo")
-    person_file = st.file_uploader("Upload Person", type=['jpg', 'jpeg', 'png'])
-
-# Generate Button
 if st.button("Magic Generate ✨"):
     if not api_key:
         st.error("Pehle Sidebar mein API Key dalein!")
-    elif garment_file and person_file:
-        st.info("AI kaam kar raha hai... Kripya 30 seconds intezar karein.")
-        # Yahan AI API ka logic chalega
-        st.warning("Note: Abhi humne sirf front-end banaya hai. API connect karne ke liye agla step follow karein.")
     else:
-        st.warning("Kripya dono photos upload karein.")
-
-st.markdown("---")
-st.caption("Powered by Fal.ai & Streamlit")
+        # 2. This is the 'Brain' the front-end was missing
+        with st.spinner("AI kaam kar raha hai..."):
+            import os
+            os.environ["FAL_KEY"] = api_key
+            
+            # Example for FLUX model
+            handler = fal_client.submit(
+                "fal-ai/flux/dev",
+                arguments={"prompt": "Your image description here"}
+            )
+            result = handler.get()
+            st.image(result['images'][0]['url'])
